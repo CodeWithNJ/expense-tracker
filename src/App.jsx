@@ -1,50 +1,30 @@
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import "./App.css";
 import Transactions from "./components/Transactions";
 
 function App() {
-  const [formData, setFormdata] = useState({
-    title: "",
-    amount: 0,
-    income: false,
-    expense: false,
-  });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
   const [history, setHistory] = useState([]);
   const [balance, setBalance] = useState(0);
   const [totalIncome, setTotalIncome] = useState(0);
   const [totalExpense, setTotalExpense] = useState(0);
 
-  const updateTransactionType = (formData, event) => {
-    if (event.target.value === "income") {
-      formData.income = true;
-      formData.expense = false;
+  function onSubmit(data) {
+    if (data.transactionType === "income") {
+      setBalance(balance + Number(data.amount));
+      setTotalIncome(totalIncome + Number(data.amount));
     } else {
-      formData.income = false;
-      formData.expense = true;
+      setBalance(balance - Number(data.amount));
+      setTotalExpense(totalExpense + Number(data.amount));
     }
-  };
-
-  const updateExpenseDetails = (formData) => {
-    if (!formData.title || !formData.amount) return;
-
-    setBalance(balance + Number(formData.amount));
-    if (formData.expense) {
-      setTotalExpense(totalExpense + Number(formData.amount));
-      setBalance(balance - Number(formData.amount));
-    } else {
-      setTotalIncome(totalIncome + Number(formData.amount));
-      setBalance(balance + Number(formData.amount));
-    }
-    setHistory([...history, formData]);
-
-    // Reset form
-    setFormdata({
-      title: "",
-      amount: 0,
-      income: false,
-      expense: false,
-    });
-  };
+    setHistory([...history, data]);
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-10">
@@ -76,13 +56,7 @@ function App() {
           <h4 className="text-2xl font-semibold text-center mb-6">
             Add New Transaction
           </h4>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              updateExpenseDetails(formData);
-            }}
-            className="space-y-6"
-          >
+          <form onSubmit={handleSubmit(onSubmit)}>
             <div>
               <label
                 htmlFor="title"
@@ -93,16 +67,33 @@ function App() {
               <input
                 id="title"
                 type="text"
-                value={formData.title}
-                onChange={(e) =>
-                  setFormdata({ ...formData, title: e.target.value })
-                }
                 placeholder="Enter title"
                 className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                required
+                {...register("title", {
+                  required: {
+                    value: true,
+                    message: "Title cannot be empty",
+                  },
+                  pattern: {
+                    value: /^[A-Za-z]+$/i,
+                    message: "Invalid Title",
+                  },
+                  minLength: {
+                    value: 3,
+                    message: "Title should be of atleast 3 characters",
+                  },
+                  maxLength: {
+                    value: 100,
+                    message: "Title should be of atmost 100 characters",
+                  },
+                })}
               />
+              {errors.title && (
+                <p className="font-medium italic text-red-500">
+                  {errors.title.message}
+                </p>
+              )}
             </div>
-
             <div>
               <label
                 htmlFor="amount"
@@ -112,46 +103,61 @@ function App() {
               </label>
               <input
                 id="amount"
-                type="number"
-                value={formData.amount || ""}
-                onChange={(e) =>
-                  setFormdata({ ...formData, amount: Number(e.target.value) })
-                }
+                type="text"
                 placeholder="Enter amount"
                 className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                required
+                {...register("amount", {
+                  required: {
+                    value: true,
+                    message: "Amount cannot be empty",
+                  },
+                  pattern: {
+                    value: /^\d+$/,
+                    message: "Invalid Amount",
+                  },
+                  min: {
+                    value: 1,
+                    message: "Amount value cannot be less than 1",
+                  },
+                })}
               />
+              {errors.amount && (
+                <p className="font-medium italic text-red-500">
+                  {errors.amount.message}
+                </p>
+              )}
             </div>
-
-            <div className="flex gap-6 items-center">
-              <label className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name="transactionType"
-                  value="income"
-                  onChange={(e) => updateTransactionType(formData, e)}
-                  className="h-4 w-4 text-green-600 focus:ring-green-500"
-                />
-                Income
-              </label>
-              <label className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name="transactionType"
-                  value="expense"
-                  onChange={(e) => updateTransactionType(formData, e)}
-                  className="h-4 w-4 text-red-600 focus:ring-red-500"
-                />
-                Expense
-              </label>
-            </div>
-
-            <div className="text-center">
+            <label htmlFor="income">
+              <input
+                type="radio"
+                value="income"
+                {...register("transactionType", {
+                  required: "Please select an option",
+                })}
+              />
+              Income
+            </label>
+            <label htmlFor="expense">
+              <input
+                type="radio"
+                value="expense"
+                {...register("transactionType", {
+                  required: "Please select an option",
+                })}
+              />
+              Expense
+            </label>
+            {errors.transactionType && (
+              <span className="font-medium italic text-red-500">
+                {errors.transactionType.message}
+              </span>
+            )}
+            <div>
               <button
                 type="submit"
-                className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-full transition-all duration-200 shadow-sm font-medium"
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
               >
-                Add Transaction
+                Submit
               </button>
             </div>
           </form>

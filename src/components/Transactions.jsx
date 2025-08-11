@@ -17,7 +17,7 @@ function Transactions({ transactionDetails }) {
           <div
             key={index}
             className={`flex justify-between items-center p-4 rounded-md shadow-sm ${
-              t.expense
+              t.transactionType === "expense"
                 ? "bg-red-100 border-l-4 border-red-500"
                 : "bg-green-100 border-l-4 border-green-500"
             }`}
@@ -31,15 +31,17 @@ function Transactions({ transactionDetails }) {
                     : "bg-green-500 text-white"
                 }`}
               >
-                {t.expense ? "Expense" : "Income"}
+                {t.transactionType === "expense" ? "Expense" : "Income"}
               </span>
             </div>
             <p
               className={`text-lg font-bold ${
-                t.expense ? "text-red-600" : "text-green-600"
+                t.transactionType === "expense"
+                  ? "text-red-600"
+                  : "text-green-600"
               }`}
             >
-              {t.expense ? "-" : "+"}${t.amount}
+              {t.transactionType === "expense" ? "-" : "+"}${t.amount}
             </p>
           </div>
         ))}
