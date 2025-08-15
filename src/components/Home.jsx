@@ -25,7 +25,7 @@ function Home() {
     setHistory([...history, data]);
   }
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-10">
+    <div className="min-h-screen flex items-center justify-center  bg-gray-900 px-4 py-10">
       <div className="w-full max-w-2xl bg-white shadow-md rounded-lg p-8 space-y-8">
         <h1 className="text-4xl font-bold text-center text-amber-800">
           Expense Tracker
