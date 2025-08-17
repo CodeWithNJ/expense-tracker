@@ -1,15 +1,49 @@
+import axios from "axios";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 function Signup() {
+  const [serverError, setServerError] = useState("");
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
-    console.log("Form submitted:", data);
+  const onSubmit = async (data) => {
+    setServerError("");
+    try {
+      const response = await axios.post("/api/v1/auth/register", {
+        fullName: data.fullname,
+        gender: data.gender,
+        dob: data.dob,
+        username: data.username,
+        password: data.password,
+      });
+
+      if (response.data.success) {
+        navigate("/");
+      }
+    } catch (error) {
+      if (error.response) {
+        console.error("Status:", error.response.status);
+        console.error("Error response:", error.response.data);
+
+        if (error.response.data?.message) {
+          setServerError(error.response.data.message);
+        } else {
+          setServerError("Something went wrong. Please try again.");
+        }
+      } else if (error.request) {
+        console.error("No response received from server:", error.request);
+        setServerError("No response from server. Please try again.");
+      } else {
+        console.error("Error setting up the request:", error.message);
+        setServerError("Request setup error. Please try again.");
+      }
+    }
   };
 
   return (
@@ -21,7 +55,9 @@ function Signup() {
         <h2 className="text-xl font-semibold text-white text-center mb-6">
           Create New Account
         </h2>
-
+        {serverError && (
+          <p className="mb-4 text-red-400 text-sm text-center">{serverError}</p>
+        )}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="flex flex-col space-y-1">
             <label
