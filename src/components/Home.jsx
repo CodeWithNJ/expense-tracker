@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Transactions from "./Transactions";
+import axios from "axios";
 
 function Home() {
   const {
@@ -13,6 +14,43 @@ function Home() {
   const [balance, setBalance] = useState(0);
   const [totalIncome, setTotalIncome] = useState(0);
   const [totalExpense, setTotalExpense] = useState(0);
+
+  useEffect(() => {
+    async function fetchAllTransactions() {
+      try {
+        const response = await axios.get(
+          "/api/v1/transactions/all",
+          {},
+          { withCredentials: true } // using cookies
+        );
+        const transactions = response.data.data.docs;
+        setHistory([...transactions]);
+      } catch (error) {
+        console.error(`Unable to fetch all transactions: ${error}`);
+      }
+    }
+
+    fetchAllTransactions();
+  }, []);
+
+  useEffect(() => {
+    async function fetchUserDetails() {
+      try {
+        const response = await axios.get(
+          "/api/v1/auth/user-details",
+          {},
+          { withCredentials: true } // using cookies
+        );
+        const userDetails = response.data.data;
+        setBalance(userDetails.balance);
+        setTotalIncome(userDetails.totalIncome);
+        setTotalExpense(userDetails.totalExpense);
+      } catch (error) {
+        console.error(`Unable to fetch user details: ${error}`);
+      }
+    }
+    fetchUserDetails();
+  }, []);
 
   function onSubmit(data) {
     if (data.transactionType === "income") {
