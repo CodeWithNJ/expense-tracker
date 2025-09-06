@@ -8,12 +8,15 @@ function Home() {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm();
 
   const [history, setHistory] = useState([]);
   const [balance, setBalance] = useState(0);
   const [totalIncome, setTotalIncome] = useState(0);
   const [totalExpense, setTotalExpense] = useState(0);
+  const [serverError, setServerError] = useState("");
+  const [serverSuccess, setServerSuccess] = useState("");
 
   useEffect(() => {
     async function fetchAllTransactions() {
@@ -52,16 +55,48 @@ function Home() {
     fetchUserDetails();
   }, []);
 
-  function onSubmit(data) {
-    if (data.transactionType === "income") {
-      setBalance(balance + Number(data.amount));
-      setTotalIncome(totalIncome + Number(data.amount));
-    } else {
-      setBalance(balance - Number(data.amount));
-      setTotalExpense(totalExpense + Number(data.amount));
+  const onSubmit = async (data) => {
+    reset();
+    setServerError("");
+    try {
+      const response = await axios.post(
+        "/api/v1/transactions",
+        {
+          title: data.title,
+          amount: data.amount,
+          transactionType: data.transactionType,
+        },
+        { withCredentials: true }
+      );
+
+      if (response.data.success) {
+        setServerSuccess(response.data.message);
+
+        const transaction = response.data.data;
+
+        setBalance((prev) =>
+          data.transactionType === "income"
+            ? prev + Number(data.amount)
+            : prev - Number(data.amount)
+        );
+        setTotalIncome((prev) =>
+          data.transactionType === "income" ? prev + Number(data.amount) : prev
+        );
+        setTotalExpense((prev) =>
+          data.transactionType === "expense" ? prev + Number(data.amount) : prev
+        );
+
+        setHistory((prev) => [...prev, transaction]);
+      }
+    } catch (error) {
+      if (error.response?.data?.message) {
+        setServerError(error.response.data.message);
+      } else {
+        setServerError("Something went wrong. Please try again.");
+      }
     }
-    setHistory([...history, data]);
-  }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center  bg-gray-900 px-4 py-10">
       <div className="w-full max-w-2xl bg-white shadow-md rounded-lg p-8 space-y-8">
@@ -92,6 +127,16 @@ function Home() {
           <h4 className="text-2xl font-semibold text-center mb-6">
             Add New Transaction
           </h4>
+          {serverError && (
+            <p className="mb-4 text-red-400 text-sm text-center">
+              {serverError}
+            </p>
+          )}
+          {serverSuccess && (
+            <p className="mb-4 text-green-500 text-sm text-center">
+              {serverSuccess}
+            </p>
+          )}
           <form onSubmit={handleSubmit(onSubmit)}>
             <div>
               <label

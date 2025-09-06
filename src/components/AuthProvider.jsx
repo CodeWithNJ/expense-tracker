@@ -40,7 +40,7 @@ function AuthProvider({ children }) {
       }
     }
     checkUserAuthenticated();
-  }, []); // Removed isAuthenticated from dependency array to prevent infinite loop
+  }, []);
 
   if (loading) {
     return <div>Loading...</div>; // Or your loading component
