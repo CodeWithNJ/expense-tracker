@@ -156,7 +156,7 @@ function Home() {
                     message: "Title cannot be empty",
                   },
                   pattern: {
-                    value: /^[A-Za-z]+$/i,
+                    value: /^(?!^\d+$)[a-zA-Z0-9\s]+$/,
                     message: "Invalid Title",
                   },
                   minLength: {
