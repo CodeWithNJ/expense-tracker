@@ -21,13 +21,27 @@ function Home() {
   useEffect(() => {
     async function fetchAllTransactions() {
       try {
-        const response = await axios.get(
-          "/api/v1/transactions/all",
-          {},
-          { withCredentials: true } // using cookies
-        );
-        const transactions = response.data.data.docs;
-        setHistory([...transactions]);
+        let allTransactions = [];
+        let currentPage = 1;
+        let hasMorePages = true;
+
+        // Fetch all pages of transactions
+        while (hasMorePages) {
+          const response = await axios.get(
+            `/api/v1/transactions/all?page=${currentPage}&limit=100`, // Get more items per page to reduce API calls
+            {},
+            { withCredentials: true } // using cookies
+          );
+          
+          const pageData = response.data.data;
+          allTransactions = [...allTransactions, ...pageData.docs];
+          
+          // Check if there are more pages
+          hasMorePages = pageData.hasNextPage;
+          currentPage++;
+        }
+
+        setHistory(allTransactions);
       } catch (error) {
         console.error(`Unable to fetch all transactions: ${error}`);
       }

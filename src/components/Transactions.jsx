@@ -1,5 +1,5 @@
 import "../App.css";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 
 function Transactions({ transactionDetails }) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -12,6 +12,13 @@ function Transactions({ transactionDetails }) {
   }, [transactionDetails, currentPage, itemsPerPage]);
 
   const totalPages = Math.ceil(transactionDetails.length / itemsPerPage);
+
+  // Reset to page 1 when data changes or when current page is out of bounds
+  useEffect(() => {
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(1);
+    }
+  }, [transactionDetails.length, totalPages, currentPage]);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -85,50 +92,55 @@ function Transactions({ transactionDetails }) {
       </div>
 
       {/* Pagination Controls */}
-      {totalPages > 1 && (
+      {transactionDetails.length > 0 && (
         <div className="flex justify-center items-center mt-6 space-x-2">
-          {/* Previous Button */}
-          <button
-            onClick={handlePrevious}
-            disabled={currentPage === 1}
-            className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-              currentPage === 1
-                ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                : "bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            }`}
-          >
-            Previous
-          </button>
+          {/* Navigation controls - always show when there are transactions */}
+          <div className="flex items-center space-x-2">
+            {/* Previous Button */}
+            <button
+              onClick={handlePrevious}
+              disabled={currentPage === 1 || totalPages <= 1}
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                currentPage === 1 || totalPages <= 1
+                  ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  : "bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              }`}
+            >
+              Previous
+            </button>
 
-          {/* Page Numbers */}
-          <div className="flex space-x-1">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <button
-                key={page}
-                onClick={() => handlePageChange(page)}
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  currentPage === page
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-200 text-gray-700 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                }`}
-              >
-                {page}
-              </button>
-            ))}
+            {/* Page Numbers */}
+            <div className="flex space-x-1">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (page) => (
+                  <button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                      currentPage === page
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-200 text-gray-700 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                )
+              )}
+            </div>
+
+            {/* Next Button */}
+            <button
+              onClick={handleNext}
+              disabled={currentPage === totalPages || totalPages <= 1}
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                currentPage === totalPages || totalPages <= 1
+                  ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  : "bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              }`}
+            >
+              Next
+            </button>
           </div>
-
-          {/* Next Button */}
-          <button
-            onClick={handleNext}
-            disabled={currentPage === totalPages}
-            className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-              currentPage === totalPages
-                ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                : "bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            }`}
-          >
-            Next
-          </button>
         </div>
       )}
     </div>
