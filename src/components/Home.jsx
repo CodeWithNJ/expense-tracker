@@ -111,6 +111,60 @@ function Home() {
     }
   };
 
+  const handleTransactionUpdate = async (transactionId, updatedData) => {
+    try {
+      // Find the original transaction to calculate balance changes
+      const originalTransaction = history.find(t => t._id === transactionId);
+      if (!originalTransaction) return;
+
+      // Calculate balance changes
+      const originalAmount = originalTransaction.amount;
+      const newAmount = updatedData.amount;
+      const originalType = originalTransaction.transactionType;
+      const newType = updatedData.transactionType;
+
+      // Update balance based on the changes
+      let balanceChange = 0;
+      let incomeChange = 0;
+      let expenseChange = 0;
+
+      // Remove original transaction impact
+      if (originalType === "income") {
+        balanceChange -= originalAmount;
+        incomeChange -= originalAmount;
+      } else {
+        balanceChange += originalAmount;
+        expenseChange -= originalAmount;
+      }
+
+      // Add new transaction impact
+      if (newType === "income") {
+        balanceChange += newAmount;
+        incomeChange += newAmount;
+      } else {
+        balanceChange -= newAmount;
+        expenseChange += newAmount;
+      }
+
+      // Update state
+      setBalance(prev => prev + balanceChange);
+      setTotalIncome(prev => prev + incomeChange);
+      setTotalExpense(prev => prev + expenseChange);
+
+      // Update the transaction in history
+      setHistory(prev => prev.map(t => 
+        t._id === transactionId 
+          ? { ...t, ...updatedData }
+          : t
+      ));
+
+      setServerSuccess("Transaction updated successfully!");
+    } catch (error) {
+      console.error("Error updating transaction in parent:", error);
+      setServerError("Failed to update transaction. Please refresh the page.");
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center  bg-gray-900 px-4 py-10">
       <div className="w-full max-w-2xl bg-white shadow-md rounded-lg p-8 space-y-8">
@@ -135,7 +189,7 @@ function Home() {
           </div>
         </div>
 
-        <Transactions transactionDetails={history} />
+        <Transactions transactionDetails={history} onTransactionUpdate={handleTransactionUpdate} />
 
         <div>
           <h4 className="text-2xl font-semibold text-center mb-6">
