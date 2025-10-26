@@ -3,7 +3,11 @@ import { useState, useMemo, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 
-function Transactions({ transactionDetails, onTransactionUpdate }) {
+function Transactions({
+  transactionDetails,
+  onTransactionUpdate,
+  onTransactionDelete,
+}) {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
   const [editingId, setEditingId] = useState(null);
@@ -58,6 +62,10 @@ function Transactions({ transactionDetails, onTransactionUpdate }) {
   const handleCancelEdit = () => {
     setEditingId(null);
     reset();
+  };
+
+  const handleDeleteClick = (transactionId) => {
+    onTransactionDelete(transactionId);
   };
 
   const onSubmit = async (data, transactionId) => {
@@ -279,6 +287,12 @@ function Transactions({ transactionDetails, onTransactionUpdate }) {
                     className="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                   >
                     Edit
+                  </button>
+                  <button
+                    onClick={() => handleDeleteClick(t._id)}
+                    className="px-3 py-1 bg-red-400 text-white text-sm rounded hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                  >
+                    Delete
                   </button>
                 </div>
               </div>

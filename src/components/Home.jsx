@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import Transactions from "./Transactions";
 import axios from "axios";
@@ -12,11 +12,25 @@ function Home() {
   } = useForm();
 
   const [history, setHistory] = useState([]);
-  const [balance, setBalance] = useState(0);
-  const [totalIncome, setTotalIncome] = useState(0);
-  const [totalExpense, setTotalExpense] = useState(0);
   const [serverError, setServerError] = useState("");
   const [serverSuccess, setServerSuccess] = useState("");
+
+  // Calculate balance, income, and expense from history (single source of truth)
+  const { balance, totalIncome, totalExpense } = useMemo(() => {
+    return history.reduce(
+      (acc, transaction) => {
+        if (transaction.transactionType === "income") {
+          acc.balance += transaction.amount;
+          acc.totalIncome += transaction.amount;
+        } else {
+          acc.balance -= transaction.amount;
+          acc.totalExpense += transaction.amount;
+        }
+        return acc;
+      },
+      { balance: 0, totalIncome: 0, totalExpense: 0 }
+    );
+  }, [history]);
 
   useEffect(() => {
     async function fetchAllTransactions() {
@@ -32,10 +46,10 @@ function Home() {
             {},
             { withCredentials: true } // using cookies
           );
-          
+
           const pageData = response.data.data;
           allTransactions = [...allTransactions, ...pageData.docs];
-          
+
           // Check if there are more pages
           hasMorePages = pageData.hasNextPage;
           currentPage++;
@@ -50,24 +64,20 @@ function Home() {
     fetchAllTransactions();
   }, []);
 
+  // Auto-clear success and error messages after 5 seconds
   useEffect(() => {
-    async function fetchUserDetails() {
-      try {
-        const response = await axios.get(
-          "/api/v1/auth/user-details",
-          {},
-          { withCredentials: true } // using cookies
-        );
-        const userDetails = response.data.data;
-        setBalance(userDetails.balance);
-        setTotalIncome(userDetails.totalIncome);
-        setTotalExpense(userDetails.totalExpense);
-      } catch (error) {
-        console.error(`Unable to fetch user details: ${error}`);
-      }
+    if (serverSuccess) {
+      const timer = setTimeout(() => setServerSuccess(""), 5000);
+      return () => clearTimeout(timer);
     }
-    fetchUserDetails();
-  }, []);
+  }, [serverSuccess]);
+
+  useEffect(() => {
+    if (serverError) {
+      const timer = setTimeout(() => setServerError(""), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [serverError]);
 
   const onSubmit = async (data) => {
     reset();
@@ -85,21 +95,8 @@ function Home() {
 
       if (response.data.success) {
         setServerSuccess(response.data.message);
-
         const transaction = response.data.data;
-
-        setBalance((prev) =>
-          data.transactionType === "income"
-            ? prev + Number(data.amount)
-            : prev - Number(data.amount)
-        );
-        setTotalIncome((prev) =>
-          data.transactionType === "income" ? prev + Number(data.amount) : prev
-        );
-        setTotalExpense((prev) =>
-          data.transactionType === "expense" ? prev + Number(data.amount) : prev
-        );
-
+        // Simply add to history - totals will be recalculated automatically
         setHistory((prev) => [...prev, transaction]);
       }
     } catch (error) {
@@ -111,57 +108,25 @@ function Home() {
     }
   };
 
-  const handleTransactionUpdate = async (transactionId, updatedData) => {
+  const handleTransactionUpdate = (transactionId, updatedData) => {
+    // Simply update the transaction in history - totals will be recalculated automatically
+    setHistory((prev) =>
+      prev.map((t) => (t._id === transactionId ? { ...t, ...updatedData } : t))
+    );
+    setServerSuccess("Transaction updated successfully!");
+  };
+
+  const handleTransactionDelete = async (transactionId) => {
     try {
-      // Find the original transaction to calculate balance changes
-      const originalTransaction = history.find(t => t._id === transactionId);
-      if (!originalTransaction) return;
-
-      // Calculate balance changes
-      const originalAmount = originalTransaction.amount;
-      const newAmount = updatedData.amount;
-      const originalType = originalTransaction.transactionType;
-      const newType = updatedData.transactionType;
-
-      // Update balance based on the changes
-      let balanceChange = 0;
-      let incomeChange = 0;
-      let expenseChange = 0;
-
-      // Remove original transaction impact
-      if (originalType === "income") {
-        balanceChange -= originalAmount;
-        incomeChange -= originalAmount;
-      } else {
-        balanceChange += originalAmount;
-        expenseChange -= originalAmount;
-      }
-
-      // Add new transaction impact
-      if (newType === "income") {
-        balanceChange += newAmount;
-        incomeChange += newAmount;
-      } else {
-        balanceChange -= newAmount;
-        expenseChange += newAmount;
-      }
-
-      // Update state
-      setBalance(prev => prev + balanceChange);
-      setTotalIncome(prev => prev + incomeChange);
-      setTotalExpense(prev => prev + expenseChange);
-
-      // Update the transaction in history
-      setHistory(prev => prev.map(t => 
-        t._id === transactionId 
-          ? { ...t, ...updatedData }
-          : t
-      ));
-
-      setServerSuccess("Transaction updated successfully!");
+      await axios.delete(`/api/v1/transactions/${transactionId}`, {
+        withCredentials: true,
+      });
+      // Simply remove from history - totals will be recalculated automatically
+      setHistory((prev) => prev.filter((p) => p._id !== transactionId));
+      setServerSuccess("Transaction deleted successfully!");
     } catch (error) {
-      console.error("Error updating transaction in parent:", error);
-      setServerError("Failed to update transaction. Please refresh the page.");
+      console.error("Error deleting transaction:", error);
+      setServerError("Failed to delete transaction. Please refresh the page.");
     }
   };
 
@@ -189,7 +154,11 @@ function Home() {
           </div>
         </div>
 
-        <Transactions transactionDetails={history} onTransactionUpdate={handleTransactionUpdate} />
+        <Transactions
+          transactionDetails={history}
+          onTransactionUpdate={handleTransactionUpdate}
+          onTransactionDelete={handleTransactionDelete}
+        />
 
         <div>
           <h4 className="text-2xl font-semibold text-center mb-6">
