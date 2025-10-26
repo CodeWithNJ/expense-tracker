@@ -131,62 +131,142 @@ function Home() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center  bg-gray-900 px-4 py-10">
-      <div className="w-full max-w-2xl bg-white shadow-md rounded-lg p-8 space-y-8">
-        <h1 className="text-4xl font-bold text-center text-amber-800">
-          Expense Tracker
-        </h1>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 px-4 py-8 sm:px-6 lg:px-8">
+      <div className="w-full max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-5xl font-extrabold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+            Expense Tracker
+          </h1>
+          <p className="text-gray-600 text-lg">
+            Manage your finances with ease
+          </p>
+        </div>
 
-        <div className="rounded-md p-4 flex flex-col sm:flex-row justify-between items-center gap-6">
-          <div className="text-center">
-            <h3 className="text-lg font-medium text-gray-700">Balance</h3>
-            <p className="text-2xl font-bold text-gray-800">${balance}</p>
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {/* Balance Card */}
+          <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-6 text-white transform transition-transform hover:scale-105">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-blue-100 font-medium">Total Balance</h3>
+              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+            </div>
+            <p className="text-3xl font-bold">${balance.toLocaleString()}</p>
           </div>
-          <div className="flex justify-between gap-6">
-            <div className="text-green-700 text-center">
-              <h4 className="font-semibold">Income</h4>
-              <p>${totalIncome}</p>
+
+          {/* Income Card */}
+          <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg p-6 text-white transform transition-transform hover:scale-105">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-green-100 font-medium">Income</h3>
+              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                  />
+                </svg>
+              </div>
             </div>
-            <div className="text-red-700 text-center">
-              <h4 className="font-semibold">Expense</h4>
-              <p>{totalExpense === 0 ? "$0" : `-$${totalExpense}`}</p>
+            <p className="text-3xl font-bold">
+              +${totalIncome.toLocaleString()}
+            </p>
+          </div>
+
+          {/* Expense Card */}
+          <div className="bg-gradient-to-br from-red-500 to-pink-600 rounded-xl shadow-lg p-6 text-white transform transition-transform hover:scale-105">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-red-100 font-medium">Expense</h3>
+              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"
+                  />
+                </svg>
+              </div>
             </div>
+            <p className="text-3xl font-bold">
+              -${totalExpense.toLocaleString()}
+            </p>
           </div>
         </div>
 
-        <Transactions
-          transactionDetails={history}
-          onTransactionUpdate={handleTransactionUpdate}
-          onTransactionDelete={handleTransactionDelete}
-        />
+        {/* Transactions Section */}
+        <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 mb-8">
+          <Transactions
+            transactionDetails={history}
+            onTransactionUpdate={handleTransactionUpdate}
+            onTransactionDelete={handleTransactionDelete}
+          />
+        </div>
 
-        <div>
-          <h4 className="text-2xl font-semibold text-center mb-6">
-            Add New Transaction
-          </h4>
-          {serverError && (
-            <p className="mb-4 text-red-400 text-sm text-center">
-              {serverError}
+        {/* Add Transaction Form */}
+        <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8">
+          <div className="text-center mb-6">
+            <h4 className="text-2xl font-bold text-gray-800 mb-2">
+              Add New Transaction
+            </h4>
+            <p className="text-gray-500 text-sm">
+              Track your income and expenses
             </p>
+          </div>
+
+          {/* Messages */}
+          {serverError && (
+            <div className="mb-4 p-4 bg-red-50 border-l-4 border-red-500 rounded-r-lg">
+              <p className="text-red-600 text-sm font-medium">{serverError}</p>
+            </div>
           )}
           {serverSuccess && (
-            <p className="mb-4 text-green-500 text-sm text-center">
-              {serverSuccess}
-            </p>
+            <div className="mb-4 p-4 bg-green-50 border-l-4 border-green-500 rounded-r-lg">
+              <p className="text-green-600 text-sm font-medium">
+                {serverSuccess}
+              </p>
+            </div>
           )}
-          <form onSubmit={handleSubmit(onSubmit)}>
+
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            {/* Title Input */}
             <div>
               <label
                 htmlFor="title"
-                className="block text-gray-700 font-medium mb-2"
+                className="block text-gray-700 font-semibold mb-2 text-sm"
               >
-                Title
+                Transaction Title
               </label>
               <input
                 id="title"
                 type="text"
-                placeholder="Enter title"
-                className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                placeholder="e.g., Grocery Shopping, Salary, etc."
+                className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                 {...register("title", {
                   required: {
                     value: true,
@@ -207,23 +287,25 @@ function Home() {
                 })}
               />
               {errors.title && (
-                <p className="font-medium italic text-red-500">
+                <p className="text-red-500 text-sm mt-1">
                   {errors.title.message}
                 </p>
               )}
             </div>
+
+            {/* Amount Input */}
             <div>
               <label
                 htmlFor="amount"
-                className="block text-gray-700 font-medium mb-2"
+                className="block text-gray-700 font-semibold mb-2 text-sm"
               >
-                Amount
+                Amount ($)
               </label>
               <input
                 id="amount"
                 type="text"
-                placeholder="Enter amount"
-                className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                placeholder="Enter amount in dollars"
+                className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                 {...register("amount", {
                   required: {
                     value: true,
@@ -240,44 +322,89 @@ function Home() {
                 })}
               />
               {errors.amount && (
-                <p className="font-medium italic text-red-500">
+                <p className="text-red-500 text-sm mt-1">
                   {errors.amount.message}
                 </p>
               )}
             </div>
-            <label htmlFor="income">
-              <input
-                type="radio"
-                value="income"
-                {...register("transactionType", {
-                  required: "Please select an option",
-                })}
-              />
-              Income
-            </label>
-            <label htmlFor="expense">
-              <input
-                type="radio"
-                value="expense"
-                {...register("transactionType", {
-                  required: "Please select an option",
-                })}
-              />
-              Expense
-            </label>
-            {errors.transactionType && (
-              <span className="font-medium italic text-red-500">
-                {errors.transactionType.message}
-              </span>
-            )}
+
+            {/* Transaction Type */}
             <div>
-              <button
-                type="submit"
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
-              >
-                Submit
-              </button>
+              <label className="block text-gray-700 font-semibold mb-3 text-sm">
+                Transaction Type
+              </label>
+              <div className="grid grid-cols-2 gap-4">
+                <label className="relative">
+                  <input
+                    type="radio"
+                    value="income"
+                    {...register("transactionType", {
+                      required: "Please select an option",
+                    })}
+                    className="peer sr-only"
+                  />
+                  <div className="flex items-center justify-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer transition-all hover:border-green-500 peer-checked:border-green-500 peer-checked:bg-green-50">
+                    <div className="flex items-center">
+                      <svg
+                        className="w-6 h-6 text-green-500 mr-2"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                        />
+                      </svg>
+                      <span className="text-gray-700 font-medium">Income</span>
+                    </div>
+                  </div>
+                </label>
+                <label className="relative">
+                  <input
+                    type="radio"
+                    value="expense"
+                    {...register("transactionType", {
+                      required: "Please select an option",
+                    })}
+                    className="peer sr-only"
+                  />
+                  <div className="flex items-center justify-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer transition-all hover:border-red-500 peer-checked:border-red-500 peer-checked:bg-red-50">
+                    <div className="flex items-center">
+                      <svg
+                        className="w-6 h-6 text-red-500 mr-2"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"
+                        />
+                      </svg>
+                      <span className="text-gray-700 font-medium">Expense</span>
+                    </div>
+                  </div>
+                </label>
+              </div>
+              {errors.transactionType && (
+                <p className="text-red-500 text-sm mt-2">
+                  {errors.transactionType.message}
+                </p>
+              )}
             </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold py-3 rounded-lg hover:from-blue-700 hover:to-purple-700 transform transition-transform hover:scale-105 shadow-lg hover:shadow-xl"
+            >
+              Add Transaction
+            </button>
           </form>
         </div>
       </div>
