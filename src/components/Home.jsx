@@ -1,9 +1,13 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useContext } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import Transactions from "./Transactions";
 import axios from "axios";
+import { AuthContext } from "./AuthProvider";
 
 function Home() {
+  const { logout } = useContext(AuthContext);
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -146,6 +150,11 @@ function Home() {
     }
   };
 
+  const handleLogout = async () => {
+    await logout();
+    navigate("/");
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 px-4 py-8 sm:px-6 lg:px-8">
       <div className="w-full max-w-4xl mx-auto">
@@ -194,6 +203,7 @@ function Home() {
               {/* Logout Button */}
               <button
                 type="button"
+                onClick={handleLogout}
                 className="bg-white text-purple-700 font-semibold px-4 py-2 rounded-lg shadow hover:shadow-md hover:bg-purple-50 transition"
               >
                 Logout

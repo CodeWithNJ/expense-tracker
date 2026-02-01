@@ -13,7 +13,7 @@ function AuthProvider({ children }) {
 
   const logout = async () => {
     try {
-      await axios.post("/api/v1/auth/logout", {}, { withCredentials: true });
+      await axios.get("/api/v1/auth/logout", {}, { withCredentials: true });
       setIsAuthenticated(false);
     } catch (error) {
       console.error("Logout error:", error);
