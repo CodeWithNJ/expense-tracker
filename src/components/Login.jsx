@@ -75,72 +75,103 @@ function Login() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-900 px-4">
-      <div className="w-full max-w-md bg-gray-800 rounded-lg shadow-lg p-8">
-        <h2 className="text-2xl font-bold text-white text-center mb-8">
-          EXPENSE TRACKER
-        </h2>
-        <h2 className="text-2xl font-bold text-white text-center mb-8">
-          Sign in to your account
-        </h2>
-
-        {serverError && (
-          <p className="mb-4 text-red-400 text-sm text-center">{serverError}</p>
-        )}
-
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-          <div className="flex flex-col space-y-3">
-            <label
-              htmlFor="username"
-              className="text-sm font-medium text-gray-200"
-            >
-              Username
-            </label>
-            <input
-              id="username"
-              type="text"
-              {...register("username", { required: true })}
-              className="w-full rounded-md bg-gray-700 px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-            {errors.username && (
-              <p className="text-red-400 text-sm">Username is required</p>
-            )}
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center px-4 py-8 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md">
+        {/* Card */}
+        <div className="bg-white rounded-2xl shadow-xl p-8 sm:p-10">
+          {/* Header with icon - matches Home navbar style */}
+          <div className="text-center mb-8">
+            <div className="inline-flex w-14 h-14 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg mb-4">
+              <svg
+                className="w-8 h-8 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 10h18M5 6h14M7 14h10M9 18h6"
+                />
+              </svg>
+            </div>
+            <h1 className="text-2xl font-bold text-gray-800 tracking-tight">
+              Expense Tracker
+            </h1>
+            <p className="mt-2 text-gray-500 text-sm">
+              Sign in to your account
+            </p>
           </div>
 
-          <div className="flex flex-col space-y-3">
-            <div className="flex items-center justify-between">
+          {serverError && (
+            <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-r-lg">
+              <p className="text-red-600 text-sm font-medium">{serverError}</p>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <div>
+              <label
+                htmlFor="username"
+                className="block text-gray-700 font-semibold mb-2 text-sm"
+              >
+                Username
+              </label>
+              <input
+                id="username"
+                type="text"
+                placeholder="Enter your username"
+                {...register("username", { required: true })}
+                className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+              />
+              {errors.username && (
+                <p className="text-red-500 text-sm mt-1">
+                  Username is required
+                </p>
+              )}
+            </div>
+
+            <div>
               <label
                 htmlFor="password"
-                className="text-sm font-medium text-gray-200"
+                className="block text-gray-700 font-semibold mb-2 text-sm"
               >
                 Password
               </label>
+              <input
+                id="password"
+                type="password"
+                placeholder="Enter your password"
+                {...register("password", { required: true })}
+                autoComplete="current-password"
+                className="w-full border-2 border-gray-200 rounded-lg px-4 py-3 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+              />
+              {errors.password && (
+                <p className="text-red-500 text-sm mt-1">
+                  Password is required
+                </p>
+              )}
             </div>
-            <input
-              id="password"
-              type="password"
-              {...register("password", { required: true })}
-              autoComplete="current-password"
-              className="w-full rounded-md bg-gray-700 px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-            {errors.password && (
-              <p className="text-red-400 text-sm">Password is required</p>
-            )}
-          </div>
 
-          <div className="mt-4">
             <button
               type="submit"
-              className="w-full rounded-md bg-indigo-500 px-4 py-3 text-white font-semibold hover:bg-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold py-3 rounded-lg hover:from-blue-700 hover:to-purple-700 transform transition-transform hover:scale-[1.02] shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
             >
               Sign in
             </button>
-          </div>
-        </form>
+          </form>
 
-        <p className="mt-8 text-center text-sm text-gray-400">
-          New User? <NavLink to="/signup"> Click Here To Sign Up</NavLink>
-        </p>
+          <p className="mt-8 text-center text-sm text-gray-500">
+            New user?{" "}
+            <NavLink
+              to="/signup"
+              className="font-semibold text-purple-600 hover:text-purple-700 transition-colors"
+            >
+              Sign up
+            </NavLink>
+          </p>
+        </div>
       </div>
     </div>
   );
