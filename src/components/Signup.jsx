@@ -46,135 +46,168 @@ function Signup() {
     }
   };
 
+  const inputClass =
+    "w-full border-2 border-gray-200 rounded-lg px-3 py-2 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all text-sm";
+  const labelClass = "block text-gray-700 font-semibold mb-1.5 text-sm";
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-900 px-4">
-      <div className="w-full max-w-md bg-gray-800 rounded-lg shadow-lg p-6">
-        <h2 className="text-2xl font-bold text-white text-center mb-2">
-          EXPENSE TRACKER
-        </h2>
-        <h2 className="text-xl font-semibold text-white text-center mb-6">
-          Create New Account
-        </h2>
-        {serverError && (
-          <p className="mb-4 text-red-400 text-sm text-center">{serverError}</p>
-        )}
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="flex flex-col space-y-1">
-            <label
-              htmlFor="fullname"
-              className="text-sm font-medium text-gray-200"
-            >
-              Full Name
-            </label>
-            <input
-              id="fullname"
-              type="text"
-              {...register("fullname", { required: true })}
-              className="w-full rounded-md bg-gray-700 px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-            {errors.fullname && (
-              <p className="text-red-400 text-sm">Full Name is required</p>
-            )}
-          </div>
-
-          <div className="flex flex-col space-y-1">
-            <label
-              htmlFor="gender"
-              className="text-sm font-medium text-gray-200"
-            >
-              Gender
-            </label>
-            <div className="flex items-center space-x-4">
-              <label className="text-sm font-medium text-gray-200 flex items-center space-x-1">
-                <input
-                  type="radio"
-                  value="Male"
-                  {...register("gender", {
-                    required: "Please select an option",
-                  })}
+    <div className="h-screen overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center px-4 py-4 sm:px-6">
+      <div className="w-full max-w-lg flex-shrink-0">
+        <div className="bg-white rounded-2xl shadow-xl p-5 sm:p-6">
+          {/* Compact header */}
+          <div className="flex items-center gap-3 mb-4">
+            <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg">
+              <svg
+                className="w-5 h-5 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 10h18M5 6h14M7 14h10M9 18h6"
                 />
-                <span>Male</span>
-              </label>
-              <label className="text-sm font-medium text-gray-200 flex items-center space-x-1">
-                <input
-                  type="radio"
-                  value="Female"
-                  {...register("gender", {
-                    required: "Please select an option",
-                  })}
-                />
-                <span>Female</span>
-              </label>
+              </svg>
             </div>
-            {errors.gender && (
-              <span className="font-normal italic text-red-500">
-                {errors.gender.message}
-              </span>
-            )}
+            <div>
+              <h1 className="text-xl font-bold text-gray-800 tracking-tight">
+                Expense Tracker
+              </h1>
+              <p className="text-gray-500 text-xs">Create your account</p>
+            </div>
           </div>
 
-          <div className="flex flex-col space-y-1">
-            <label htmlFor="dob" className="text-sm font-medium text-gray-200">
-              Date of Birth (Optional)
-            </label>
-            <input
-              id="dob"
-              type="date"
-              {...register("dob")}
-              className="w-full rounded-md bg-gray-700 px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
+          {serverError && (
+            <div className="mb-3 p-3 bg-red-50 border-l-4 border-red-500 rounded-r-lg">
+              <p className="text-red-600 text-xs font-medium">{serverError}</p>
+            </div>
+          )}
 
-          <div className="flex flex-col space-y-1">
-            <label
-              htmlFor="username"
-              className="text-sm font-medium text-gray-200"
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label htmlFor="fullname" className={labelClass}>
+                  Full Name
+                </label>
+                <input
+                  id="fullname"
+                  type="text"
+                  placeholder="Full name"
+                  {...register("fullname", { required: true })}
+                  className={inputClass}
+                />
+                {errors.fullname && (
+                  <p className="text-red-500 text-xs mt-0.5">Required</p>
+                )}
+              </div>
+              <div>
+                <label htmlFor="username" className={labelClass}>
+                  Username
+                </label>
+                <input
+                  id="username"
+                  type="text"
+                  placeholder="Username"
+                  {...register("username", { required: true })}
+                  className={inputClass}
+                />
+                {errors.username && (
+                  <p className="text-red-500 text-xs mt-0.5">Required</p>
+                )}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className={labelClass}>Gender</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <label className="relative">
+                    <input
+                      type="radio"
+                      value="Male"
+                      {...register("gender", {
+                        required: "Please select an option",
+                      })}
+                      className="peer sr-only"
+                    />
+                    <div className="flex items-center justify-center py-2 border-2 border-gray-200 rounded-lg cursor-pointer transition-all hover:border-purple-500 peer-checked:border-purple-500 peer-checked:bg-purple-50 text-sm font-medium text-gray-700">
+                      Male
+                    </div>
+                  </label>
+                  <label className="relative">
+                    <input
+                      type="radio"
+                      value="Female"
+                      {...register("gender", {
+                        required: "Please select an option",
+                      })}
+                      className="peer sr-only"
+                    />
+                    <div className="flex items-center justify-center py-2 border-2 border-gray-200 rounded-lg cursor-pointer transition-all hover:border-purple-500 peer-checked:border-purple-500 peer-checked:bg-purple-50 text-sm font-medium text-gray-700">
+                      Female
+                    </div>
+                  </label>
+                </div>
+                {errors.gender && (
+                  <p className="text-red-500 text-xs mt-0.5">
+                    {errors.gender.message}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label htmlFor="dob" className={labelClass}>
+                  Date of Birth{" "}
+                  <span className="text-gray-400 font-normal">(opt.)</span>
+                </label>
+                <input
+                  id="dob"
+                  type="date"
+                  {...register("dob")}
+                  className={inputClass}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label htmlFor="password" className={labelClass}>
+                  Password
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  placeholder="Password"
+                  {...register("password", { required: true })}
+                  autoComplete="new-password"
+                  className={inputClass}
+                />
+                {errors.password && (
+                  <p className="text-red-500 text-xs mt-0.5">Required</p>
+                )}
+              </div>
+              <div className="flex flex-col justify-end">
+                <button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold py-2.5 rounded-lg hover:from-blue-700 hover:to-purple-700 transform transition-transform hover:scale-[1.02] shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 text-sm"
+                >
+                  Create account
+                </button>
+              </div>
+            </div>
+          </form>
+
+          <p className="mt-4 text-center text-sm text-gray-500">
+            Already have an account?{" "}
+            <NavLink
+              to="/"
+              className="font-semibold text-purple-600 hover:text-purple-700 transition-colors"
             >
-              Username
-            </label>
-            <input
-              id="username"
-              type="text"
-              {...register("username", { required: true })}
-              className="w-full rounded-md bg-gray-700 px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-            {errors.username && (
-              <p className="text-red-400 text-sm">Username is required</p>
-            )}
-          </div>
-
-          <div className="flex flex-col space-y-1">
-            <label
-              htmlFor="password"
-              className="text-sm font-medium text-gray-200"
-            >
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              {...register("password", { required: true })}
-              autoComplete="current-password"
-              className="w-full rounded-md bg-gray-700 px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-            {errors.password && (
-              <p className="text-red-400 text-sm">Password is required</p>
-            )}
-          </div>
-
-          <div>
-            <button
-              type="submit"
-              className="w-full rounded-md bg-indigo-500 px-3 py-2 text-white font-semibold hover:bg-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            >
-              Create Account
-            </button>
-          </div>
-        </form>
-
-        <p className="mt-6 text-center text-sm text-gray-400">
-          Existing User? <NavLink to="/">Click Here To Sign In</NavLink>
-        </p>
+              Sign in
+            </NavLink>
+          </p>
+        </div>
       </div>
     </div>
   );
